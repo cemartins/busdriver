@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" 
+   version="2.4"> 
+
+    <display-name>BusDriver Application</display-name>
+    <description>
+	BusDriver Application
+    </description>
+
+	<!-- Database connection pool -->
+	<resource-ref>
+      <description>Database connection pool</description>
+      <res-ref-name>jdbc/busdb</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+	</resource-ref>
+
+
+	<!-- Context parameters -->
+	<context-param>
+	  <description>The module that will be used to do the parsing of the files</description>
+	  <param-name>parsermodule</param-name>
+      <param-value>busparser</param-value>
+    </context-param>
+	<context-param>
+	  <description>the default database connection. busDriverRequest.getDeaultDB() will return the busDB that corresponds to this database connection</description>
+	  <param-name>defaultdbmodule</param-name>
+      <param-value>bd-busdriver</param-value>
+    </context-param>
+	
+	<!-- Locale parameters -->
+	<context-param>
+	  <description>Character Encoding</description>
+	  <param-name>CharacterEncoding</param-name>
+      <param-value>iso-8859-1</param-value>
+    </context-param>
+    <context-param>
+      <description>Language Code</description>
+      <param-name>languagecode</param-name>
+      <param-value>pt</param-value>
+    </context-param>
+    <context-param>
+      <description>Country Code</description>
+      <param-name>countrycode</param-name>
+      <param-value>PT</param-value>
+    </context-param>
+    <!-- Request parameters -->
+    <context-param>
+      <description>Template to use when busDriver error occurs (architecture level)</description>
+      <param-name>defaultErrorTemplate</param-name>
+      <param-value>busError.html</param-value>
+    </context-param>
+    <context-param>
+      <description>Path to templates directory. No initial slash means path relative to application directory</description>
+      <param-name>templatesdirectory</param-name>
+      <param-value>WEB-INF/templates</param-value>
+    </context-param>
+    <context-param>
+      <description>Maximum size of request buffer. Error template returned if request bigger</description>
+      <param-name>requestinputlimit</param-name>
+      <param-value>1048576</param-value>
+    </context-param>
+    <context-param>
+      <description>System temporary directory. Used by DiskFileItemFactory (Commons.FileUpload)</description>
+      <param-name>systmpdir</param-name>
+      <param-value>/tmp</param-value>
+    </context-param>
+    <context-param>
+      <description>Number of bytes above wich a request part is considered a file.Used by DiskFileItemFactory (Commons.FileUpload)</description>
+      <param-name>sizeThreshold</param-name>
+      <param-value>4096</param-value>
+    </context-param>
+    <context-param>
+      <description>URL pointing to the temporary directory</description>
+      <param-name>javax.servlet.context.tempurl</param-name>
+      <param-value>http://localhost:8080/moedamas/tmp</param-value>
+    </context-param>
+
+	<!-- BusDriver Plugin Module parameters -->
+    <context-param>
+      <description>Colon separated list of the busdriver modules that are going to be used by this application. Each module will have a parameter indicatin how to configure itself</description>
+      <param-name>usemodules</param-name>
+      <param-value>bd-busdriver;busparser;busmail</param-value>
+    </context-param>
+    <context-param>
+      <description>Database parameters are to be read from a file (file name is database.properties)</description>
+      <param-name>bd-busdriver</param-name>
+      <param-value>com.moedamas.busdriver.modules.db.busDBPoolFactory;com.moedamas.busdriver.core.ConfigFile;bd-busdriver.properties</param-value>
+    </context-param>
+    <context-param>
+      <description>Hibernate ORM (file name is busmail.properties)</description>
+      <param-name>hibernate</param-name>
+      <param-value>com.moedamas.busdriver.modules.db.busHibernateFactory;com.moedamas.busdriver.core.ConfigContext;null</param-value>
+    </context-param>
+    <context-param>
+      <description>Parser engine to process templates and create output for the client</description>
+      <param-name>busparser</param-name>
+      <param-value>com.moedamas.busdriver.parsers.busParserFactory;com.moedamas.busdriver.core.ConfigContext;null</param-value>
+    </context-param>
+    <context-param>
+      <description>Mail parameters are to be read from a file (file name is busmail.properties)</description>
+      <param-name>busmail</param-name>
+      <param-value>com.moedamas.busdriver.modules.mail.busMail;com.moedamas.busdriver.core.ConfigFile;busmail.properties</param-value>
+    </context-param>
+
+
+	<!-- Application specific parameters -->
+    <context-param>
+      <description>dummy</description>
+      <param-name>dummy</param-name>
+      <param-value>dummy</param-value>
+    </context-param>
+    <context-param>
+      <description>dummy2</description>
+      <param-name>dummy2</param-name>
+      <param-value>dummy2</param-value>
+    </context-param>
+
+    <!-- Define example application events listeners -->
+    <listener>
+        <listener-class>com.moedamas.busdriver.core.busListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>busDriver2</servlet-name>
+        <servlet-class>com.moedamas.busdriver.core.Dispatcher</servlet-class>
+
+		<!-- Load this servlet at server startup time -->
+		<load-on-startup>5</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>busDriver2</servlet-name>
+        <url-pattern>/busDriver</url-pattern>
+    </servlet-mapping>
+    
+	<!-- this filter is optional. guarantees an active session for every request. Has to be the first filter in the chain -->
+	<filter>
+	    <filter-name>busSession</filter-name>
+	    <filter-class>com.moedamas.busdriver.core.busSessionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+	    <filter-name>busSession</filter-name>
+	    <servlet-name>busDriver2</servlet-name>
+	</filter-mapping>
+
+	<!-- This filter is busDrivers core filter. It is not optional  -->
+	<filter>
+	    <filter-name>busFilter</filter-name>
+	    <filter-class>com.moedamas.busdriver.core.busRequestFilter</filter-class>
+	</filter>
+	<filter-mapping>
+	    <filter-name>busFilter</filter-name>
+	    <servlet-name>busDriver2</servlet-name>
+	</filter-mapping>
+
+	<!-- this filter is optional. You only need it if the application receives MultipartRequests -->
+	<filter>
+	    <filter-name>MultipartFilter</filter-name>
+	    <filter-class>com.moedamas.busdriver.core.MultipartReqFilter</filter-class>
+	</filter>
+	<filter-mapping>
+	    <filter-name>MultipartFilter</filter-name>
+	    <servlet-name>busDriver2</servlet-name>
+	</filter-mapping>
+
+
+    <!-- Define the default session timeout for your application,
+         in minutes.  From a servlet or JSP page, you can modify
+         the timeout for a particular session dynamically by using
+         HttpSession.getMaxInactiveInterval(). -->
+
+    <session-config>
+      <session-timeout>10</session-timeout>    <!-- 10 minutes -->
+    </session-config>
+
+  <!-- Define a Security Constraint on this Application -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>HTMLManger and Manager command</web-resource-name>
+      <url-pattern>/busDriver</url-pattern>
+      <url-pattern>/index.html</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+       <!-- NOTE:  This role is not present in the default users file -->
+       <role-name>editor</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+
+    <!-- Default login configuration uses form-based authentication -->
+    <login-config>
+      <auth-method>FORM</auth-method>
+      <realm-name>Example Form-Based Authentication Area</realm-name>
+      <form-login-config>
+        <form-login-page>/login.html</form-login-page>
+        <form-error-page>/login_error.html</form-error-page>
+      </form-login-config>
+    </login-config>
+
+    <!-- Security roles referenced by this web application -->
+    <security-role>
+      <role-name>editor</role-name>
+    </security-role>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+	</welcome-file-list>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/servlet/LinuxFirewall</location>
+	</error-page>
+
+</web-app>

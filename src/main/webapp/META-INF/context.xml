@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- BusDriver Test Context -->
+
+<Context path="/bd2" docBase="/Users/cemartins/Projects/Moedamas/busDriver/web" debug="0" cookies="true" workDir="/Users/cemartins/Projects/Moedamas/busDriver/web/tmp" reloadable="true" swallowOutput="true" useNaming="true" allowLinking="true">
+     
+
+	<Logger className="org.apache.catalina.logger.FileLogger" directory="logs" prefix="bd2_log." suffix=".log" timestamp="true"/>
+
+
+	<Resource name="jdbc/busdb" auth="Container" type="javax.sql.DataSource"
+               maxActive="100" maxIdle="30" maxWait="10000"
+               driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://localhost/busdriver"
+               username="cemartins" password="kory2u"
+               validationQuery="SELECT 1"
+               timeBetweenEvictionRunsMillis="10000"
+               minEvictableIdleTimeMillis="60000"/>
+
+</Context>

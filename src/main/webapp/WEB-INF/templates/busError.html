@@ -1,0 +1,34 @@
+
+<HTML>
+
+<HEAD>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<META NAME="Author" CONTENT="">
+	<META NAME="Copyright" CONTENT="">
+	<META NAME="Updated" CONTENT="">
+	<META NAME="Name" CONTENT="">
+	<link rel=STYLESHEET href="style/app.css" type="text/css">
+	<TITLE>Erro aplicacional</TITLE>
+</HEAD>
+<BODY>
+<h1>Erro aplicacional</h1>
+<TABLE width="100%">
+<TR>
+	<TD class="hed">Mensagem de Erro</TD>
+</TR>
+<jtp repeat=getNumValues(ERROR)><TR>
+	<TD class=ev><?ERROR?></TD>
+</TR>
+</jtp>
+</TABLE>
+<TABLE width="100%">
+<TR>
+	<TD class="hed">Trace LOG</TD>
+</TR>
+<jtp repeat=getNumValues(LOG)><TR>
+	<TD class=ev><?LOG?></TD>
+</TR>
+</jtp>
+</TABLE>
+</BODY>
+</HTML>
